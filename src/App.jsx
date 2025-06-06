@@ -1,8 +1,20 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/auth/login';
+import Register from './components/auth/register';
+import styles from './App.module.css';
 
-export default function App() {
+function App() {
   return (
-    <>
-      <h1>Fare Payment System</h1>
-    </>
+    <Router>
+      <div className={styles.app}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Login />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
+
+export default App;
