@@ -235,10 +235,6 @@ const Register = () => {
 
           <button type="submit" className={styles.btnPrimary}>Register</button>
         </form>
-
-        <div className={styles.loginLink}>
-          Already have an account? <Link to="/login">Login here</Link>
-        </div>
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
-        <h2>Login</h2>
+        <h2>Welcome Back</h2>
         
         {success && <div className={styles.successMessage}>{success}</div>}
         
@@ -85,8 +85,8 @@ const Login = () => {
           <button type="submit" className={styles.btnPrimary}>Login</button>
         </form>
 
-        <div className={styles.registerLink}>
-          Don't have an account? <Link to="/register">Register here</Link>
+        <div className={styles.forgotPasswordLink}>
+          <Link to="/forgot-password">Forgotten account?</Link>
         </div>
       </div>
     </div>
