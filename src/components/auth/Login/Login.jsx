@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Login.module.css';
+import { auth } from '../../../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +12,7 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -28,15 +31,23 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // Here you would typically make an API call to login the user
+    if (!validateForm()) return;
+    setLoading(true);
+    setErrors({});
+    setSuccess('');
+    try {
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
       setSuccess('Login successful!');
       setFormData({
         email: '',
         password: ''
       });
+    } catch (error) {
+      setErrors({ firebase: error.message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,6 +65,7 @@ const Login = () => {
         <h2>Welcome Back</h2>
         
         {success && <div className={styles.successMessage}>{success}</div>}
+        {errors.firebase && <div className={styles.errorMessage}>{errors.firebase}</div>}
         
         <form onSubmit={handleSubmit} className={styles.loginForm}>
           <div className={styles.formGroup}>
@@ -82,7 +94,9 @@ const Login = () => {
             {errors.password && <div className={styles.errorMessage}>{errors.password}</div>}
           </div>
 
-          <button type="submit" className={styles.btnPrimary}>Login</button>
+          <button type="submit" className={styles.btnPrimary} disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
 
         <div className={styles.forgotPasswordLink}>

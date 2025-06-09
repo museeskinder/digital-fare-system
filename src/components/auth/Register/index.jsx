@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import styles from './styles.module.css';
+import { auth, db } from '../../../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +21,7 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -62,10 +66,31 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // Here you would typically make an API call to register the user
+    if (!validateForm()) return;
+    setLoading(true);
+    setErrors({});
+    setSuccess('');
+    try {
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+      // Store user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        plateNumber: formData.userType === 'driver' ? formData.plateNumber : '',
+        userType: formData.userType,
+        createdAt: new Date()
+      });
       setSuccess('Registration successful!');
       setFormData({
         firstName: '',
@@ -77,6 +102,10 @@ const Register = () => {
         confirmPassword: '',
         userType: 'passenger'
       });
+    } catch (error) {
+      setErrors({ firebase: error.message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,21 +139,22 @@ const Register = () => {
           <button
             className={`${styles.toggleBtn} ${formData.userType === 'passenger' ? styles.active : ''}`}
             onClick={() => toggleUserType('passenger')}
+            type="button"
           >
             Passenger
           </button>
           <button
             className={`${styles.toggleBtn} ${formData.userType === 'driver' ? styles.active : ''}`}
             onClick={() => toggleUserType('driver')}
+            type="button"
           >
             Driver
           </button>
         </div>
 
         <h2>Register as {formData.userType}</h2>
-        
         {success && <div className={styles.successMessage}>{success}</div>}
-        
+        {errors.firebase && <div className={styles.errorMessage}>{errors.firebase}</div>}
         <form onSubmit={handleSubmit} className={styles.registerForm}>
           <div className={styles.formGroup}>
             <label htmlFor="firstName">First Name</label>
@@ -233,7 +263,9 @@ const Register = () => {
             {errors.confirmPassword && <div className={styles.errorMessage}>{errors.confirmPassword}</div>}
           </div>
 
-          <button type="submit" className={styles.btnPrimary}>Register</button>
+          <button type="submit" className={styles.btnPrimary} disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
         </form>
       </div>
     </div>
