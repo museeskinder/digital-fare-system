@@ -4,7 +4,7 @@ import styles from './Login.module.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    phoneNumber: '',
+    email: '',
     password: ''
   });
 
@@ -14,10 +14,10 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = 'Please enter a valid 10-digit phone number';
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
     
     if (!formData.password) {
@@ -34,7 +34,7 @@ const Login = () => {
       // Here you would typically make an API call to login the user
       setSuccess('Login successful!');
       setFormData({
-        phoneNumber: '',
+        email: '',
         password: ''
       });
     }
@@ -57,17 +57,16 @@ const Login = () => {
         
         <form onSubmit={handleSubmit} className={styles.loginForm}>
           <div className={styles.formGroup}>
-            <label htmlFor="phoneNumber">Phone Number</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formData.phoneNumber}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
-              placeholder="+2519XXXXXXX"
-              maxLength="10"
+              placeholder="Enter your email"
             />
-            {errors.phoneNumber && <div className={styles.errorMessage}>{errors.phoneNumber}</div>}
+            {errors.email && <div className={styles.errorMessage}>{errors.email}</div>}
           </div>
 
           <div className={styles.formGroup}>

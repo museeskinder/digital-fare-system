@@ -6,6 +6,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    email: '',
     phoneNumber: '',
     plateNumber: '',
     password: '',
@@ -27,6 +28,12 @@ const Register = () => {
       newErrors.lastName = 'Last name is required';
     }
     
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
     } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
@@ -61,6 +68,7 @@ const Register = () => {
       setFormData({
         firstName: '',
         lastName: '',
+        email: '',
         phoneNumber: '',
         plateNumber: '',
         password: '',
@@ -133,6 +141,19 @@ const Register = () => {
               placeholder="Enter your last name"
             />
             {errors.lastName && <div className={styles.errorMessage}>{errors.lastName}</div>}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+            />
+            {errors.email && <div className={styles.errorMessage}>{errors.email}</div>}
           </div>
 
           <div className={styles.formGroup}>
