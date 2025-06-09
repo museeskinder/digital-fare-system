@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import styles from './styles.module.css';
 
 const Register = () => {
@@ -34,10 +36,10 @@ const Register = () => {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (!formData.phoneNumber.trim()) {
+    if (!formData.phoneNumber) {
       newErrors.phoneNumber = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      newErrors.phoneNumber = 'Please enter a valid 10-digit phone number';
+    } else if (formData.phoneNumber.length !== 12) { // +251 + 9 digits
+      newErrors.phoneNumber = 'Please enter a valid 9-digit phone number';
     }
 
     if (formData.userType === 'driver' && !formData.plateNumber.trim()) {
@@ -83,6 +85,13 @@ const Register = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handlePhoneChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      phoneNumber: value
     }));
   };
 
@@ -158,14 +167,26 @@ const Register = () => {
 
           <div className={styles.formGroup}>
             <label htmlFor="phoneNumber">Phone Number</label>
-            <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
+            <PhoneInput
+              country={'et'}
               value={formData.phoneNumber}
-              onChange={handleChange}
-              placeholder="+2519XXXXXXX"
-              maxLength="10"
+              onChange={handlePhoneChange}
+              inputProps={{
+                id: 'phoneNumber',
+                name: 'phoneNumber',
+                required: true,
+                placeholder: 'Enter your phone number'
+              }}
+              containerClass={styles.phoneInputContainer}
+              inputClass={styles.phoneInput}
+              buttonClass={styles.phoneInputButton}
+              dropdownClass={styles.phoneInputDropdown}
+              searchClass={styles.phoneInputSearch}
+              countryCodeEditable={false}
+              enableSearch={true}
+              searchPlaceholder="Search country..."
+              searchNotFound="No country found"
+              preferredCountries={['et']}
             />
             {errors.phoneNumber && <div className={styles.errorMessage}>{errors.phoneNumber}</div>}
           </div>
