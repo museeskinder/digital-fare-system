@@ -1,41 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { auth } from '../../firebase';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '../../contexts/AuthContext';
 import { FaUser, FaBars, FaTimes } from 'react-icons/fa';
 import styles from './Navbar.module.css';
 
-const Navbar = ({ userType, onLogout }) => {
+const Navbar = ({ onLogout }) => {
+  const { userData, updateUserData } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            setUserData(userDoc.data());
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      } else {
-        setUserData(null);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      if (onLogout) {
+        onLogout();
       }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const handleProfileUpdate = (updatedData) => {
-    setUserData(prev => ({
-      ...prev,
-      ...updatedData
-    }));
+    updateUserData(updatedData);
   };
 
   const toggleMenu = () => {
@@ -59,75 +46,70 @@ const Navbar = ({ userType, onLogout }) => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  if (loading) {
+  if (!userData) {
     return null;
   }
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.navLeft}>
-        <div className={styles.profileContainer}>
-          <button 
-            className={styles.profileButton}
-            onClick={toggleProfile}
-            aria-label="Profile menu"
-          >
-            <FaUser className={styles.profileIcon} />
-          </button>
-
-          {isProfileOpen && (
-            <div className={styles.profileDropdown}>
-              {userData && (
-                <div className={styles.userInfo}>
-                  <p className={styles.userName}>
-                    {userData.firstName} {userData.lastName}
-                  </p>
-                  <p className={styles.userEmail}>{userData.email}</p>
-                </div>
-              )}
-              <button 
-                className={styles.logoutButton}
-                onClick={onLogout}
-              >
-                Logout
-              </button>
-            </div>
-          )}
+      <div className={styles.navbarContent}>
+        <div className={styles.logo}>
+          <h1>Digital Fare System</h1>
         </div>
 
-        {userType === 'admin' && (
-          <button className={styles.navLink}>
-            Routes
-          </button>
-        )}
-      </div>
+        {/* Mobile menu button */}
+        <button className={styles.mobileMenuButton} onClick={toggleMenu}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
 
-      <button 
-        className={styles.menuButton}
-        onClick={toggleMenu}
-        aria-label="Toggle menu"
-      >
-        {isMenuOpen ? <FaTimes /> : <FaBars />}
-      </button>
+        {/* Desktop menu */}
+        <div className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ''}`}>
+          <div className={styles.userInfo}>
+            <span>Welcome, {userData.firstName} {userData.lastName}</span>
+            <span className={styles.userType}>({userData.userType})</span>
+          </div>
 
-      {isMenuOpen && (
-        <div className={styles.mobileMenu}>
-          {userData && (
-            <div className={styles.mobileUserInfo}>
-              <p className={styles.userName}>
+          <div className={styles.profileContainer}>
+            <button className={styles.profileButton} onClick={toggleProfile}>
+              <FaUser />
+              <span className={styles.profileName}>
                 {userData.firstName} {userData.lastName}
-              </p>
-              <p className={styles.userEmail}>{userData.email}</p>
-            </div>
-          )}
-          <button 
-            className={styles.mobileLogoutButton}
-            onClick={onLogout}
-          >
-            Logout
-          </button>
+              </span>
+            </button>
+
+            {isProfileOpen && (
+              <div className={styles.profileDropdown}>
+                <div className={styles.profileInfo}>
+                  <h3>{userData.firstName} {userData.lastName}</h3>
+                  <p>{userData.email}</p>
+                  <p>{userData.phoneNumber}</p>
+                  {userData.userType === 'driver' && userData.plateNumber && (
+                    <p>Plate: {userData.plateNumber}</p>
+                  )}
+                </div>
+                
+                {(userData.userType === 'driver' || userData.userType === 'passenger') && (
+                  <button 
+                    className={styles.editProfileButton}
+                    onClick={() => {
+                      // This will be handled by the parent component
+                      if (window.editProfile) {
+                        window.editProfile();
+                      }
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                )}
+                
+                <button className={styles.logoutButton} onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };

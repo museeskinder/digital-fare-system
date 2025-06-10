@@ -4,9 +4,11 @@ import styles from './Login.module.css';
 import { auth, db } from '../../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { updateUserData } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -48,6 +50,9 @@ const Login = () => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setSuccess('Login successful!');
+        
+        // Update the auth context with user data
+        updateUserData(userData);
         
         // Redirect based on userType
         switch (userData.userType) {

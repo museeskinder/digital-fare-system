@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
 import { FaTimes } from 'react-icons/fa';
 import styles from './EditProfileModal.module.css';
 
 const EditProfileModal = ({ isOpen, onClose, userData, onProfileUpdate }) => {
+  const { updateUserData } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -75,8 +77,13 @@ const EditProfileModal = ({ isOpen, onClose, userData, onProfileUpdate }) => {
 
       await updateDoc(doc(db, 'users', user.uid), updatedData);
       
-      // Update the parent component's state
-      onProfileUpdate(updatedData);
+      // Update the auth context
+      updateUserData(updatedData);
+
+      // Update the parent component's state if callback provided
+      if (onProfileUpdate) {
+        onProfileUpdate(updatedData);
+      }
 
       setSuccess('Profile updated successfully!');
       // Close modal after 2 seconds
@@ -150,18 +157,27 @@ const EditProfileModal = ({ isOpen, onClose, userData, onProfileUpdate }) => {
                 name="plateNumber"
                 value={formData.plateNumber}
                 onChange={handleChange}
-                placeholder="Enter your plate number"
+                placeholder="Enter your plate number (e.g., 3-ABC-1234)"
               />
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className={styles.submitButton}
-            disabled={loading}
-          >
-            {loading ? 'Updating...' : 'Update Profile'}
-          </button>
+          <div className={styles.formActions}>
+            <button 
+              type="button" 
+              className={styles.cancelButton}
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className={styles.submitButton}
+              disabled={loading}
+            >
+              {loading ? 'Updating...' : 'Update Profile'}
+            </button>
+          </div>
         </form>
       </div>
     </div>
