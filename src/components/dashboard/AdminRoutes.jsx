@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaSearch } from 'react-icons/fa';
 import styles from './AdminRoutes.module.css';
 
 const AdminRoutes = () => {
   const [routes, setRoutes] = useState([]);
+  const [filteredRoutes, setFilteredRoutes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [newRoute, setNewRoute] = useState({
     startPoint: '',
     endPoint: '',
@@ -20,6 +22,20 @@ const AdminRoutes = () => {
     fetchRoutes();
   }, []);
 
+  useEffect(() => {
+    // Filter routes based on search term
+    if (searchTerm.trim() === '') {
+      setFilteredRoutes(routes);
+    } else {
+      const filtered = routes.filter(route => 
+        route.startPoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        route.endPoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        route.tariff.toString().includes(searchTerm)
+      );
+      setFilteredRoutes(filtered);
+    }
+  }, [searchTerm, routes]);
+
   const fetchRoutes = async () => {
     try {
       const routesQuery = query(collection(db, 'routes'), orderBy('startPoint'));
@@ -29,9 +45,15 @@ const AdminRoutes = () => {
         ...doc.data()
       }));
       setRoutes(routesList);
+      setFilteredRoutes(routesList);
     } catch (error) {
       setError('Error fetching routes: ' + error.message);
     }
+  };
+
+  const handleSearch = () => {
+    // Search is handled automatically by useEffect
+    // This function can be used for additional search logic if needed
   };
 
   const handleInputChange = (e) => {
@@ -122,41 +144,59 @@ const AdminRoutes = () => {
     <div className={styles.routesContainer}>
       <h2>Routes Management</h2>
 
-      {/* Display existing routes */}
-      <div className={styles.routesList}>
-        <h3>Existing Routes</h3>
-        {routes.length === 0 ? (
-          <p>No routes found</p>
-        ) : (
-          <div className={styles.routesTable}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Start Point</th>
-                  <th>End Point</th>
-                  <th>Tariff (Birr)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {routes.map(route => (
-                  <tr 
-                    key={route.id} 
-                    className={styles.routeRow}
-                    onClick={() => handleEditClick(route)}
-                  >
-                    <td>{route.startPoint}</td>
-                    <td>{route.endPoint}</td>
-                    <td>{route.tariff.toFixed(2)}</td>
-                    <div className={styles.editOverlay}>
-                      <FaEdit />
-                      <span>Edit</span>
-                    </div>
+      {/* Search Section */}
+      <div className={styles.searchSection}>
+        <div className={styles.searchInput}>
+          <input
+            type="text"
+            placeholder="Search routes by start point, end point, or tariff..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button 
+            className={styles.searchButton}
+            onClick={handleSearch}
+          >
+            <FaSearch />
+            Search Routes
+          </button>
+        </div>
+        
+        {/* Display routes results */}
+        <div className={styles.routesList}>
+          {filteredRoutes.length === 0 ? (
+            <p className={styles.noRoutes}>{searchTerm ? 'No routes found matching your search.' : 'No routes found'}</p>
+          ) : (
+            <div className={styles.routesTable}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Start Point</th>
+                    <th>End Point</th>
+                    <th>Tariff (Birr)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {filteredRoutes.map(route => (
+                    <tr 
+                      key={route.id} 
+                      className={styles.routeRow}
+                      onClick={() => handleEditClick(route)}
+                    >
+                      <td>{route.startPoint}</td>
+                      <td>{route.endPoint}</td>
+                      <td>{route.tariff.toFixed(2)}</td>
+                      <div className={styles.editOverlay}>
+                        <FaEdit />
+                        <span>Edit</span>
+                      </div>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add/Edit route form */}
