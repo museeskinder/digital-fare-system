@@ -1,0 +1,16 @@
+.dashboardContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboardContainer h1 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.dashboardContainer p {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.5;
+} 

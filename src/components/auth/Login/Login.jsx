@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
-import { auth } from '../../../firebase';
+import { auth, db } from '../../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -38,12 +40,32 @@ const Login = () => {
     setErrors({});
     setSuccess('');
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      setSuccess('Login successful!');
-      setFormData({
-        email: '',
-        password: ''
-      });
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      
+      // Get user data from Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setSuccess('Login successful!');
+        
+        // Redirect based on userType
+        switch (userData.userType) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'driver':
+            navigate('/driver');
+            break;
+          case 'passenger':
+            navigate('/passenger');
+            break;
+          default:
+            navigate('/');
+        }
+      } else {
+        setErrors({ firebase: 'User data not found' });
+      }
     } catch (error) {
       setErrors({ firebase: error.message });
     } finally {
