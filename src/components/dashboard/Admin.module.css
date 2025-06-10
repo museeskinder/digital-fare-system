@@ -1,6 +1,7 @@
 .adminDashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
+  overflow-x: hidden;
 }
 
 .content {
@@ -8,6 +9,8 @@
   min-height: calc(100vh - 64px);
   padding: 2rem;
   margin-top: 64px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -50,6 +53,8 @@
 @media (max-width: 768px) {
   .content {
     padding: 1rem;
+    margin-top: 64px;
+    overflow-x: hidden;
   }
 
   .sidebar {
@@ -60,5 +65,20 @@
 
   .mainContent {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0.75rem;
+    margin-top: 64px;
+  }
+
+  .sidebar {
+    padding: 0.75rem;
+  }
+
+  .mainContent {
+    padding: 0.75rem;
   }
 } 

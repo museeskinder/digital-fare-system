@@ -167,34 +167,74 @@ const AdminRoutes = () => {
           {filteredRoutes.length === 0 ? (
             <p className={styles.noRoutes}>{searchTerm ? 'No routes found matching your search.' : 'No routes found'}</p>
           ) : (
-            <div className={styles.routesTable}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Start Point</th>
-                    <th>End Point</th>
-                    <th>Tariff (Birr)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredRoutes.map(route => (
-                    <tr 
-                      key={route.id} 
-                      className={styles.routeRow}
-                      onClick={() => handleEditClick(route)}
-                    >
-                      <td>{route.startPoint}</td>
-                      <td>{route.endPoint}</td>
-                      <td>{route.tariff.toFixed(2)}</td>
-                      <div className={styles.editOverlay}>
-                        <FaEdit />
-                        <span>Edit</span>
-                      </div>
+            <>
+              {/* Desktop table view */}
+              <div className={styles.routesTable}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Start Point</th>
+                      <th>End Point</th>
+                      <th>Tariff (Birr)</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredRoutes.map(route => (
+                      <tr 
+                        key={route.id} 
+                        className={styles.routeRow}
+                        onClick={() => handleEditClick(route)}
+                      >
+                        <td>{route.startPoint}</td>
+                        <td>{route.endPoint}</td>
+                        <td>{route.tariff.toFixed(2)}</td>
+                        <div className={styles.editOverlay}>
+                          <FaEdit />
+                          <span>Edit</span>
+                        </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile card view */}
+              <div className={styles.routesCards}>
+                {filteredRoutes.map(route => (
+                  <div 
+                    key={route.id} 
+                    className={styles.routeCard}
+                    onClick={() => handleEditClick(route)}
+                  >
+                    <div className={styles.routeCardContent}>
+                      <div className={styles.routeInfo}>
+                        <div className={styles.routePoint}>
+                          <strong>From:</strong> {route.startPoint}
+                        </div>
+                        <div className={styles.routePoint}>
+                          <strong>To:</strong> {route.endPoint}
+                        </div>
+                        <div className={styles.routeTariff}>
+                          <strong>Tariff:</strong> {route.tariff.toFixed(2)} Birr
+                        </div>
+                      </div>
+                      <div className={styles.routeCardActions}>
+                        <button 
+                          className={styles.mobileEditButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick(route);
+                          }}
+                        >
+                          <FaEdit />
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

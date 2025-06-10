@@ -26,6 +26,34 @@
   font-weight: 600;
 }
 
+/* Desktop navigation */
+.desktopNav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.routesLink {
+  background: none;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.routesLink:hover {
+  color: #007bff;
+}
+
+.routesLink svg {
+  width: 14px;
+  height: 14px;
+}
+
 .mobileMenuButton {
   display: none;
   background: none;
@@ -61,6 +89,7 @@
 
 .profileContainer {
   position: relative;
+  z-index: 1000;
 }
 
 .profileButton {
@@ -95,6 +124,12 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   min-width: 250px;
   padding: 1rem;
+  z-index: 1001;
+  border: 1px solid #e8e8e8;
+  /* Debug styles */
+  opacity: 1;
+  visibility: visible;
+  transform: none;
 }
 
 .profileInfo {
@@ -148,6 +183,76 @@
   background-color: #c82333;
 }
 
+/* Mobile-only action buttons */
+.mobileActions {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.mobileRoutesButton,
+.mobileEditProfileButton,
+.mobileLogoutButton {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mobileRoutesButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+}
+
+.mobileRoutesButton:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
+}
+
+.mobileRoutesButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mobileEditProfileButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.mobileEditProfileButton:hover {
+  background-color: #0056b3;
+}
+
+.mobileLogoutButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.mobileLogoutButton:hover {
+  background-color: #c82333;
+}
+
+.mobileBackdrop {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
 @media (max-width: 768px) {
   .navbarContent {
     padding: 0 1rem;
@@ -157,13 +262,20 @@
     font-size: 1.25rem;
   }
 
+  /* Hide desktop navigation on mobile */
+  .desktopNav {
+    display: none;
+  }
+
   .mobileMenuButton {
     display: block;
+    z-index: 1001;
+    position: relative;
   }
 
   .menu {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 64px;
     left: 0;
     right: 0;
     background-color: white;
@@ -176,22 +288,107 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    height: auto;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    z-index: 999;
+    display: flex;
+    border-top: 1px solid #eee;
+    /* Debug styles */
+    min-height: 200px;
   }
 
   .menuOpen {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    /* Debug styles */
+    background-color: #f8f9fa;
+    border: 2px solid #007bff;
+  }
+
+  /* Hide welcome message on mobile when menu is open */
+  .hiddenOnMobile {
+    display: none !important;
+  }
+
+  /* Show mobile actions when menu is open */
+  .showOnMobile {
+    display: flex !important;
+    /* Debug styles */
+    background-color: #e3f2fd;
+    padding: 0.5rem;
+    border-radius: 4px;
   }
 
   .userInfo {
     align-items: flex-start;
+    text-align: left;
+  }
+
+  .userInfo span {
+    font-size: 1rem;
+  }
+
+  .profileContainer {
+    width: 100%;
+  }
+
+  .profileButton {
+    width: 100%;
+    justify-content: space-between;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
   }
 
   .profileDropdown {
     position: static;
-    margin-top: 0;
+    margin-top: 1rem;
     box-shadow: none;
     border: 1px solid #eee;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .profileInfo {
+    text-align: left;
+  }
+
+  .profileInfo h3 {
+    font-size: 1.1rem;
+  }
+
+  .profileInfo p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbarContent {
+    padding: 0 0.75rem;
+  }
+
+  .logo h1 {
+    font-size: 1.1rem;
+  }
+
+  .menu {
+    padding: 0.75rem;
+  }
+
+  .profileButton {
+    padding: 0.75rem;
+  }
+
+  .profileDropdown {
+    padding: 0.75rem;
+  }
+
+  .mobileEditProfileButton,
+  .mobileLogoutButton {
+    padding: 0.875rem;
+    font-size: 0.95rem;
   }
 } 

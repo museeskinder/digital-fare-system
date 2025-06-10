@@ -2,6 +2,7 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .dashboardContainer h1 {
@@ -38,4 +39,58 @@
 .profileInfo strong {
   color: #333;
   font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 1rem;
+    margin: 1rem;
+    max-width: 100%;
+  }
+
+  .dashboardContainer h1 {
+    font-size: 1.75rem;
+  }
+
+  .dashboardContainer p {
+    font-size: 1rem;
+  }
+
+  .profileInfo {
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .profileInfo h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .profileInfo p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardContainer {
+    padding: 0.75rem;
+    margin: 0.5rem;
+  }
+
+  .dashboardContainer h1 {
+    font-size: 1.5rem;
+  }
+
+  .profileInfo {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .profileInfo h2 {
+    font-size: 1.1rem;
+  }
+
+  .profileInfo p {
+    font-size: 0.9rem;
+  }
 } 

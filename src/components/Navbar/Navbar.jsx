@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaUser, FaBars, FaTimes, FaRoute } from 'react-icons/fa';
 import styles from './Navbar.module.css';
 
 const Navbar = ({ onLogout }) => {
@@ -26,19 +26,33 @@ const Navbar = ({ onLogout }) => {
   };
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    console.log('Toggle menu clicked, current state:', isMenuOpen);
+    setIsMenuOpen(prev => !prev);
     if (isProfileOpen) setIsProfileOpen(false);
   };
 
-  const toggleProfile = () => {
+  const toggleProfile = (e) => {
+    e.stopPropagation(); // Prevent event bubbling
+    console.log('Profile button clicked, current state:', isProfileOpen);
     setIsProfileOpen(!isProfileOpen);
     if (isMenuOpen) setIsMenuOpen(false);
   };
 
   const handleClickOutside = (e) => {
+    // Close profile dropdown if clicking outside
     if (!e.target.closest(`.${styles.profileContainer}`)) {
       setIsProfileOpen(false);
     }
+  };
+
+  const handleBackdropClick = () => {
+    setIsMenuOpen(false);
+  };
+
+  const handleRoutesClick = () => {
+    // For admin users, this could scroll to routes section or navigate
+    // For now, we'll just close the mobile menu
+    setIsMenuOpen(false);
   };
 
   useEffect(() => {
@@ -57,14 +71,31 @@ const Navbar = ({ onLogout }) => {
           <h1>Digital Fare System</h1>
         </div>
 
+        {/* Desktop Routes Link - Only for Admin */}
+        {userData.userType === 'admin' && (
+          <div className={styles.desktopNav}>
+            <button 
+              className={styles.routesLink}
+              onClick={handleRoutesClick}
+            >
+              Routes
+            </button>
+          </div>
+        )}
+
         {/* Mobile menu button */}
-        <button className={styles.mobileMenuButton} onClick={toggleMenu}>
+        <button 
+          className={styles.mobileMenuButton} 
+          onClick={toggleMenu}
+          type="button"
+        >
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
         {/* Desktop menu */}
         <div className={`${styles.menu} ${isMenuOpen ? styles.menuOpen : ''}`}>
-          <div className={styles.userInfo}>
+          {/* Welcome message - hidden on mobile when menu is open */}
+          <div className={`${styles.userInfo} ${isMenuOpen ? styles.hiddenOnMobile : ''}`}>
             <span>Welcome, {userData.firstName} {userData.lastName}</span>
             <span className={styles.userType}>({userData.userType})</span>
           </div>
@@ -108,8 +139,54 @@ const Navbar = ({ onLogout }) => {
               </div>
             )}
           </div>
+
+          {/* Mobile-only action buttons */}
+          <div className={`${styles.mobileActions} ${isMenuOpen ? styles.showOnMobile : ''}`}>
+            {/* Mobile Routes Link - Only for Admin */}
+            {userData.userType === 'admin' && (
+              <button 
+                className={styles.mobileRoutesButton}
+                onClick={handleRoutesClick}
+              >
+                <FaRoute />
+                Routes
+              </button>
+            )}
+
+            {(userData.userType === 'driver' || userData.userType === 'passenger') && (
+              <button 
+                className={styles.mobileEditProfileButton}
+                onClick={() => {
+                  if (window.editProfile) {
+                    window.editProfile();
+                  }
+                  setIsMenuOpen(false);
+                }}
+              >
+                Edit Profile
+              </button>
+            )}
+            
+            <button 
+              className={styles.mobileLogoutButton} 
+              onClick={() => {
+                handleLogout();
+                setIsMenuOpen(false);
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
+      
+      {/* Mobile menu backdrop */}
+      {isMenuOpen && (
+        <div 
+          className={styles.mobileBackdrop}
+          onClick={handleBackdropClick}
+        />
+      )}
     </nav>
   );
 };

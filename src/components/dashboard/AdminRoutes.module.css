@@ -91,6 +91,121 @@
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
+/* Mobile card styles */
+.routesCards {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.routeCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e8e8e8;
+  overflow: hidden;
+}
+
+.routeCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  border-color: #007bff;
+}
+
+.routeCardContent {
+  padding: 0.875rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.routeCardContent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.routeInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.routePoint {
+  color: #333;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.routePoint:first-child::before {
+  content: '📍';
+  font-size: 0.75rem;
+}
+
+.routePoint:nth-child(2)::before {
+  content: '🎯';
+  font-size: 0.75rem;
+}
+
+.routeTariff {
+  color: #007bff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.routeTariff::before {
+  content: '💰';
+  font-size: 0.75rem;
+}
+
+.routeCardActions {
+  flex-shrink: 0;
+}
+
+.mobileEditButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+  min-width: 60px;
+}
+
+.mobileEditButton:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
+}
+
+.mobileEditButton svg {
+  width: 12px;
+  height: 12px;
+}
+
 .editButton {
   background: none;
   border: none;
@@ -296,6 +411,8 @@
   .routesContainer {
     padding: 1rem;
     margin: 1rem;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .routesContainer h2 {
@@ -308,9 +425,62 @@
     font-size: 1.25rem;
   }
 
-  .routesTable th,
-  .routesTable td {
-    padding: 0.75rem 1rem;
+  /* Hide desktop table on mobile */
+  .routesTable {
+    display: none;
+  }
+
+  /* Show mobile cards on mobile */
+  .routesCards {
+    display: flex;
+    gap: 0.625rem;
+  }
+
+  .routeCardContent {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem;
+  }
+
+  .routeInfo {
+    gap: 0.125rem;
+    margin-left: 0.375rem;
+  }
+
+  .routePoint {
+    font-size: 0.8rem;
+  }
+
+  .routeTariff {
+    font-size: 0.875rem;
+    margin-top: 0.125rem;
+  }
+
+  .routeCardActions {
+    align-self: center;
+  }
+
+  .mobileEditButton {
+    width: auto;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 50px;
+  }
+
+  .searchInput {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .searchInput input {
+    width: 100%;
+  }
+
+  .searchButton {
+    width: 100%;
+    justify-content: center;
   }
 
   .addRouteSection {
@@ -321,7 +491,65 @@
     padding: 0.625rem 0.875rem;
   }
 
-  .submitButton {
+  .formActions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .submitButton,
+  .cancelButton {
+    width: 100%;
     padding: 0.75rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .routesContainer {
+    padding: 0.75rem;
+    margin: 0.5rem;
+  }
+
+  .routesContainer h2 {
+    font-size: 1.5rem;
+  }
+
+  .searchSection {
+    padding: 1rem;
+  }
+
+  .addRouteSection {
+    padding: 1rem;
+  }
+
+  .routesCards {
+    gap: 0.5rem;
+  }
+
+  .routeCardContent {
+    padding: 0.625rem;
+    gap: 0.5rem;
+  }
+
+  .routeInfo {
+    margin-left: 0.25rem;
+  }
+
+  .routePoint {
+    font-size: 0.75rem;
+  }
+
+  .routeTariff {
+    font-size: 0.8rem;
+  }
+
+  .mobileEditButton {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.7rem;
+    min-width: 45px;
+  }
+
+  .mobileEditButton svg {
+    width: 10px;
+    height: 10px;
   }
 } 
