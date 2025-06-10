@@ -1,16 +1,30 @@
 import React from 'react';
-import styles from './Dashboard.module.css';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { signOut } from 'firebase/auth';
 import Navbar from '../Navbar/Navbar';
+import AdminRoutes from './AdminRoutes';
+import styles from './Admin.module.css';
 
 const Admin = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
-    <>
-      <Navbar />
-      <div className={styles.dashboardContainer}>
-        <h1>Admin Dashboard</h1>
-        <p>Welcome to the admin dashboard! This page is working correctly.</p>
+    <div className={styles.adminDashboard}>
+      <Navbar userType="admin" onLogout={handleLogout} />
+      <div className={styles.content}>
+        <AdminRoutes />
       </div>
-    </>
+    </div>
   );
 };
 

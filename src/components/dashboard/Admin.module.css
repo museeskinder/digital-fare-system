@@ -1,0 +1,64 @@
+.adminDashboard {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.content {
+  padding-top: 64px; /* Height of the navbar */
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+  margin-top: 64px;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: white;
+  padding: 1.5rem;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #555;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebarButton:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.sidebarButton.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .mainContent {
+    padding: 1rem;
+  }
+} 
